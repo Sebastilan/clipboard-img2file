@@ -42,15 +42,15 @@ powershell.exe -ExecutionPolicy Bypass -NoProfile -Command ^
     $scriptPath = \"$installDir\clipboard-img2file.ps1\"; ^
     $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument \"-ExecutionPolicy Bypass -WindowStyle Hidden -File `\"$scriptPath`\" -Silent\"; ^
     $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME; ^
-    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Days 365); ^
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Days 365); ^
     Register-ScheduledTask -TaskName $appName -Action $action -Trigger $trigger -Settings $settings -Description 'Auto-convert clipboard bitmap images to file paths for CLI tools.' -RunLevel Limited ^| Out-Null; ^
     Write-Host '        Auto-start registered (with crash recovery)' -ForegroundColor Green; ^
     ^
-    Write-Host '  [4/4] Starting monitor...' -ForegroundColor Cyan; ^
-    Start-Process powershell.exe -ArgumentList @('-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-File', $scriptPath, '-Silent') -WindowStyle Hidden; ^
-    Start-Sleep -Seconds 1; ^
+    Write-Host '  [4/4] Starting monitor via Task Scheduler...' -ForegroundColor Cyan; ^
+    Start-ScheduledTask -TaskName $appName; ^
+    Start-Sleep -Seconds 2; ^
     $running = Get-WmiObject Win32_Process -Filter \"Name='powershell.exe'\" -ErrorAction SilentlyContinue ^| Where-Object { $_.CommandLine -like '*clipboard-img2file*' }; ^
-    if ($running) { Write-Host '        Monitor is running!' -ForegroundColor Green } ^
+    if ($running) { Write-Host '        Monitor is running (managed by Task Scheduler)!' -ForegroundColor Green } ^
     else { Write-Host '        [WARN] Monitor may not have started' -ForegroundColor Yellow }; ^
     ^
     Write-Host ''; ^

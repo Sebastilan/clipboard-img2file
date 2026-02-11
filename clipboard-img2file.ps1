@@ -202,6 +202,26 @@ function Remove-OldScreenshots {
     }
 }
 
+# --- Crash diagnostics ---
+
+# 1. AppDomain.UnhandledException — catches .NET-level crashes that bypass try/catch
+[System.AppDomain]::CurrentDomain.add_UnhandledException({
+    param($sender, $eventArgs)
+    $ex = $eventArgs.ExceptionObject
+    $msg = "UNHANDLED .NET EXCEPTION (IsTerminating=$($eventArgs.IsTerminating)): $($ex.GetType().FullName): $($ex.Message)`n$($ex.StackTrace)"
+    # Write directly to file since Write-Log may not be available
+    $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $line = "[$ts] [FATAL] $msg"
+    Add-Content -Path $LogFile -Value $line -ErrorAction SilentlyContinue
+})
+
+# 2. PowerShell.Exiting — fires on normal process exit
+Register-EngineEvent PowerShell.Exiting -Action {
+    $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $line = "[$ts] [WARN] PowerShell.Exiting event fired (ExitCode=$LASTEXITCODE)"
+    Add-Content -Path $LogFile -Value $line -ErrorAction SilentlyContinue
+} | Out-Null
+
 # --- Startup ---
 Write-Log "Monitor started (PID=$PID)" "OK"
 Write-Log "SaveDir=$SaveDir  MaxKeep=$MaxKeep  PollMs=$PollMs"
@@ -209,11 +229,22 @@ Write-Log "SaveDir=$SaveDir  MaxKeep=$MaxKeep  PollMs=$PollMs"
 Remove-OldScreenshots
 
 $captureCount = 0
+$startTime = Get-Date
+$lastHeartbeat = Get-Date
 
 # --- Main loop ---
 try {
     while ($true) {
         Start-Sleep -Milliseconds $PollMs
+
+        # Heartbeat: every 5 minutes log health status
+        if (((Get-Date) - $lastHeartbeat).TotalMinutes -ge 5) {
+            $uptime = [math]::Round(((Get-Date) - $startTime).TotalHours, 2)
+            $memMB  = [math]::Round((Get-Process -Id $PID).WorkingSet64 / 1MB, 1)
+            Write-Log "Heartbeat: uptime=${uptime}h mem=${memMB}MB captured=$captureCount"
+            $lastHeartbeat = Get-Date
+        }
+
         try {
             if ([System.Windows.Forms.Clipboard]::ContainsImage()) {
                 $img = [System.Windows.Forms.Clipboard]::GetImage()
@@ -242,10 +273,16 @@ try {
         }
     }
 }
+catch {
+    Write-Log "Fatal error in main loop: $($_.Exception.GetType().FullName): $($_.Exception.Message)" "ERROR"
+    Write-Log "StackTrace: $($_.ScriptStackTrace)" "ERROR"
+    exit 1
+}
 finally {
-    Write-Log "Monitor stopped (captured $captureCount images)" "OK"
+    $uptime = if ($startTime) { [math]::Round(((Get-Date) - $startTime).TotalHours, 2) } else { 0 }
+    Write-Log "Monitor stopped (captured=$captureCount uptime=${uptime}h exitcode=$LASTEXITCODE)" "WARN"
     if ($mutex) {
-        $mutex.ReleaseMutex()
+        try { $mutex.ReleaseMutex() } catch {}
         $mutex.Dispose()
     }
 }
