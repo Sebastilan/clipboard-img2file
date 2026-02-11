@@ -58,17 +58,19 @@ gh issue view <number> --repo Sebastilan/clipboard-img2file --comments
 1. 修复/改进代码
 2. 更新 README（如有需要）
 3. commit + push
-4. 创建 GitHub Release（`gh release create v1.x`）
-5. 回复相关 issue 说明已修复，关闭 issue
+4. 更新 CSDN 文章（如有功能变更）
+5. 创建 GitHub Release（`gh release create v1.x`）
+6. 回复相关 issue 说明已修复，关闭 issue
 
 ## 文档联动
 
 | 触发事件 | 必须更新 |
 |---------|---------|
-| 新功能/改动 | README.md |
+| 新功能/改动 | README.md + CSDN 文章（`/csdn update clipboard-img2file`） |
 | 踩坑/重要决策 | 本文件「经验沉淀」段 |
 | 新增 API/参数 | README.md 参数表 + clipboard-img2file.ps1 注释 |
-| 发布新版本 | GitHub Release |
+| 发布新版本 | GitHub Release + CSDN 文章 |
+| 代码变更 | commit + push → 重新安装生效 |
 
 ## 经验沉淀
 
