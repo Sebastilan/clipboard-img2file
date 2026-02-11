@@ -28,6 +28,24 @@ gh issue view <number> --repo Sebastilan/clipboard-img2file --comments
 # 4. 汇报给用户：有几个新 issue，已处理几个，需要决策的列出来
 ```
 
+## 推广检索（每次对话可选）
+
+搜索网络上与本工具痛点相关的讨论，发现有人遇到同样问题时，去回复推荐我们的方案。
+
+**搜索关键词**：
+- `clipboard bitmap paste CLI terminal not working`
+- `Claude Code paste screenshot Windows`
+- `Win+Shift+S paste terminal`
+- `剪贴板 截图 粘贴 终端 不工作`
+
+**已回复的帖子**（避免重复）：
+- [anthropics/claude-code#9301](https://github.com/anthropics/claude-code/issues/9301) - Alt+Paste not working on Windows 11
+
+**回复原则**：
+- 有帮助、不广告，先认同痛点再推荐方案
+- 说明是 workaround 而非官方修复
+- 附上仓库链接
+
 ## 回复规范
 
 - 语言：根据 issue 作者的语言回复（中文 issue 用中文，英文用英文）

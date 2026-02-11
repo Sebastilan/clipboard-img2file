@@ -96,6 +96,7 @@ powershell.exe -ExecutionPolicy Bypass -File .\clipboard-img2file.ps1 -Status
 ## Confirmed Working With / 已验证兼容
 
 - `Win+Shift+S` (Windows Snipping Tool)
+- WeChat Screenshot / 微信截图 (`Alt+A`)
 - `Snipaste`
 - `PrintScreen`
 
