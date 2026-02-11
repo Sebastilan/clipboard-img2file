@@ -6,9 +6,17 @@ Auto-convert clipboard bitmap images to file paths — paste screenshots directl
 
 ## The Problem / 解决什么问题
 
-When you take a screenshot (`Win+Shift+S`), it copies bitmap data to your clipboard. CLI terminals only understand file paths, not raw bitmap — you can't paste a screenshot directly into tools like Claude Code.
+You're using Claude Code and want to show it a screenshot of a bug, an error message, or a UI design. You press `Win+Shift+S`, select the area, then `Ctrl+V` in the terminal — **nothing happens.** The terminal doesn't understand bitmap data, only file paths.
 
-截图后剪贴板里是 bitmap 数据，但 CLI 终端只认文件路径，没法直接粘贴截图。
+Your current workaround? Save the screenshot manually, find the file, copy the path, paste it. Every. Single. Time.
+
+**This tool eliminates that friction.** Screenshot → Ctrl+V → done.
+
+你正在用 Claude Code，想给它看一张 bug 截图、报错信息或 UI 设计稿。你按 `Win+Shift+S` 截图，然后在终端 `Ctrl+V` — **没反应。** 因为终端不认 bitmap 数据，只认文件路径。
+
+现在的绕弯路：手动保存截图 → 找到文件 → 复制路径 → 粘贴。每次都这样。
+
+**这个工具消除了这个摩擦。** 截图 → Ctrl+V → 搞定。
 
 ## How It Works / 工作原理
 
