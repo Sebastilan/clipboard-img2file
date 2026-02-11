@@ -75,4 +75,5 @@ gh issue view <number> --repo Sebastilan/clipboard-img2file --comments
 - PowerShell 剪贴板 API 必须在 STA 线程运行，pwsh 7 默认 MTA 不可用，必须用 powershell.exe 5.1
 - bash 里执行 PowerShell 命令时 `$_` 会被 bash 展开，复杂逻辑用 .ps1 文件而非 inline
 - `Register-ScheduledTask -RunLevel Limited` 不需要管理员权限
-- Task Scheduler 的 RestartOnFailure 是进程退出触发，非心跳检测
+- Task Scheduler 的 RestartOnFailure **只能重启由它自己启动的进程**。`Start-Process` 绕过 Task Scheduler 启动的进程挂了，RestartOnFailure 不会触发。安装后必须用 `Start-ScheduledTask` 启动
+- 安装脚本中停旧进程→注册任务→启动任务之间需要留够间隔（`Start-Sleep`），否则可能竞争导致首次启动立即崩溃
