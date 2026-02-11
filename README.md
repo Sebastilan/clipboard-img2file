@@ -51,7 +51,7 @@ Double-click **`uninstall.bat`** in the extracted folder. It removes everything 
 |------|--------|
 | Copy script | → `%LOCALAPPDATA%\clipboard-img2file\` |
 | Register auto-start | → Windows Task Scheduler (current user, at logon) |
-| Enable crash recovery | → auto-restart up to 3 times (1 min interval) |
+| Enable crash recovery | → auto-restart on failure (1 min interval) |
 | Start monitor | → runs immediately in background |
 
 You can safely delete the downloaded zip after installation.
