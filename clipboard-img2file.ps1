@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Monitors clipboard for bitmap image data, saves it as a PNG file,
-    and replaces clipboard content with the file path.
+    and adds the file path to clipboard while keeping the original image.
 
     Designed for CLI tools (like Claude Code) that accept file paths
     but not raw bitmap data from clipboard.
@@ -246,16 +246,24 @@ try {
         }
 
         try {
-            if ([System.Windows.Forms.Clipboard]::ContainsImage()) {
+            if ([System.Windows.Forms.Clipboard]::ContainsImage() -and
+                -not [System.Windows.Forms.Clipboard]::ContainsData('ClipboardImg2File')) {
                 $img = [System.Windows.Forms.Clipboard]::GetImage()
                 if ($null -ne $img) {
                     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
                     $filePath  = Join-Path $SaveDir "screenshot_$timestamp.png"
 
                     $img.Save($filePath, [System.Drawing.Imaging.ImageFormat]::Png)
-                    $img.Dispose()
 
-                    [System.Windows.Forms.Clipboard]::SetText($filePath)
+                    # Multi-format: Text (CLI) + Bitmap (chat apps) + FileDrop (file managers)
+                    $dataObj = New-Object System.Windows.Forms.DataObject
+                    $dataObj.SetText($filePath)
+                    $dataObj.SetImage($img)
+                    $dataObj.SetData([System.Windows.Forms.DataFormats]::FileDrop, [string[]]@($filePath))
+                    $dataObj.SetData('ClipboardImg2File', $true)  # marker to prevent re-processing
+                    [System.Windows.Forms.Clipboard]::SetDataObject($dataObj, $true)
+
+                    $img.Dispose()
 
                     Remove-OldScreenshots
 

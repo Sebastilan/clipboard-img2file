@@ -25,9 +25,9 @@ Screenshot (Win+Shift+S)
     ↓  clipboard = bitmap
 Monitor detects image
     ↓  saves as PNG
-    ↓  clipboard = file path
-Ctrl+V in terminal
-    ↓  pastes file path ✓
+    ↓  clipboard = file path + bitmap + file reference
+Ctrl+V in terminal  → pastes file path ✓
+Ctrl+V in WeChat    → pastes image ✓
 ```
 
 ## Install / 安装
@@ -85,6 +85,7 @@ powershell.exe -ExecutionPolicy Bypass -File .\clipboard-img2file.ps1 -Status
 
 ## Features / 特性
 
+- **Non-destructive** — keeps original image in clipboard, adds file path alongside it
 - **Zero dependencies** — built-in Windows PowerShell + .NET only
 - **Single instance** — Mutex lock prevents duplicates
 - **Auto-cleanup** — keeps only recent N screenshots
@@ -103,7 +104,7 @@ powershell.exe -ExecutionPolicy Bypass -File .\clipboard-img2file.ps1 -Status
 ## FAQ / 常见问题
 
 **Q: Does it affect normal copy-paste?**
-Only bitmap images are converted. Text, files, and other clipboard content are untouched.
+No. The original image stays in clipboard — chat apps (WeChat, Slack, etc.) still paste the image as usual. The tool only *adds* a file path for CLI tools. Text, files, and other clipboard content are untouched.
 
 **Q: Where are screenshots saved?**
 `%TEMP%\clipboard-img2file\`. Auto-cleaned, only the latest 5 kept.
