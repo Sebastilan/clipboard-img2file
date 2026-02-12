@@ -18,6 +18,9 @@ powershell.exe -ExecutionPolicy Bypass -NoProfile -Command ^
     Get-WmiObject Win32_Process -Filter \"Name='powershell.exe'\" ^| ^
         Where-Object { $_.CommandLine -like '*clipboard-img2file*' -and $_.ProcessId -ne $PID } ^| ^
         ForEach-Object { Stop-Process -Id $_.ProcessId -Force }; ^
+    Get-WmiObject Win32_Process -Filter \"Name='wscript.exe'\" ^| ^
+        Where-Object { $_.CommandLine -like '*clipboard-img2file*' } ^| ^
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force }; ^
     Write-Host '        Done' -ForegroundColor Green; ^
     ^
     Write-Host '  [2/3] Removing auto-start task...' -ForegroundColor Cyan; ^

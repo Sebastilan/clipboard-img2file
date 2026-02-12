@@ -8,10 +8,18 @@ echo   Clipboard Image to File - Installer
 echo  ============================================
 echo.
 
-REM --- Locate script (same folder as this bat) ---
-set "SOURCE=%~dp0clipboard-img2file.ps1"
-if not exist "%SOURCE%" (
+REM --- Locate files (same folder as this bat) ---
+set "SOURCE_PS1=%~dp0clipboard-img2file.ps1"
+set "SOURCE_VBS=%~dp0launcher.vbs"
+if not exist "%SOURCE_PS1%" (
     echo  [ERROR] clipboard-img2file.ps1 not found!
+    echo          Make sure it is in the same folder as this installer.
+    echo.
+    pause
+    exit /b 1
+)
+if not exist "%SOURCE_VBS%" (
+    echo  [ERROR] launcher.vbs not found!
     echo          Make sure it is in the same folder as this installer.
     echo.
     pause
@@ -23,11 +31,13 @@ powershell.exe -ExecutionPolicy Bypass -NoProfile -Command ^
     $ErrorActionPreference = 'Stop'; ^
     $appName = 'ClipboardImg2File'; ^
     $installDir = \"$env:LOCALAPPDATA\clipboard-img2file\"; ^
-    $source = '%SOURCE%'; ^
+    $sourcePs1 = '%SOURCE_PS1%'; ^
+    $sourceVbs = '%SOURCE_VBS%'; ^
     ^
     Write-Host '  [1/4] Copying files...' -ForegroundColor Cyan; ^
     if (!(Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null }; ^
-    Copy-Item $source \"$installDir\clipboard-img2file.ps1\" -Force; ^
+    Copy-Item $sourcePs1 \"$installDir\clipboard-img2file.ps1\" -Force; ^
+    Copy-Item $sourceVbs \"$installDir\launcher.vbs\" -Force; ^
     Write-Host '        Installed to:' $installDir -ForegroundColor Green; ^
     ^
     Write-Host '  [2/4] Stopping old instances...' -ForegroundColor Cyan; ^
@@ -39,8 +49,8 @@ powershell.exe -ExecutionPolicy Bypass -NoProfile -Command ^
     Write-Host '  [3/4] Registering auto-start...' -ForegroundColor Cyan; ^
     $existing = Get-ScheduledTask -TaskName $appName -ErrorAction SilentlyContinue; ^
     if ($existing) { Unregister-ScheduledTask -TaskName $appName -Confirm:$false }; ^
-    $scriptPath = \"$installDir\clipboard-img2file.ps1\"; ^
-    $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument \"-ExecutionPolicy Bypass -WindowStyle Hidden -File `\"$scriptPath`\" -Silent\"; ^
+    $vbsPath = \"$installDir\launcher.vbs\"; ^
+    $action = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument \"`\"$vbsPath`\"\"; ^
     $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME; ^
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Days 365); ^
     Register-ScheduledTask -TaskName $appName -Action $action -Trigger $trigger -Settings $settings -Description 'Auto-convert clipboard bitmap images to file paths for CLI tools.' -RunLevel Limited ^| Out-Null; ^

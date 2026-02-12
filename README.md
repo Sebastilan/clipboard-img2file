@@ -49,9 +49,10 @@ Double-click **`uninstall.bat`** in the extracted folder. It removes everything 
 
 | Step | Detail |
 |------|--------|
-| Copy script | → `%LOCALAPPDATA%\clipboard-img2file\` |
+| Copy script + launcher | → `%LOCALAPPDATA%\clipboard-img2file\` |
 | Register auto-start | → Windows Task Scheduler (current user, at logon) |
 | Enable crash recovery | → auto-restart on failure (1 min interval) |
+| Silent launch | → VBScript wrapper prevents any window flash |
 | Start monitor | → runs immediately in background |
 
 You can safely delete the downloaded zip after installation.
@@ -89,6 +90,7 @@ powershell.exe -ExecutionPolicy Bypass -File .\clipboard-img2file.ps1 -Status
 - **Zero dependencies** — built-in Windows PowerShell + .NET only
 - **Single instance** — Mutex lock prevents duplicates
 - **Auto-cleanup** — keeps only recent N screenshots
+- **Truly silent** — VBScript launcher eliminates PowerShell window flash on startup
 - **Crash recovery** — Task Scheduler auto-restarts on failure
 - **Log rotation** — auto-rotates at 1 MB (`%TEMP%\clipboard-img2file\monitor.log`)
 - **Fully offline** — no network, clipboard + filesystem only
