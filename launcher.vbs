@@ -11,5 +11,7 @@ installDir = WshShell.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\clipboard-i
 scriptPath = installDir & "\clipboard-img2file.ps1"
 
 ' Launch PowerShell completely hidden (windowStyle 0 = SW_HIDE)
+' bWaitOnReturn = True so Task Scheduler stays "Running" and can
+' trigger RestartOnFailure when the monitor process dies.
 cmd = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & scriptPath & """ -Silent"
-WshShell.Run cmd, 0, False
+WshShell.Run cmd, 0, True

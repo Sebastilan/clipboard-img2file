@@ -79,3 +79,5 @@ gh issue view <number> --repo Sebastilan/clipboard-img2file --comments
 - `Register-ScheduledTask -RunLevel Limited` 不需要管理员权限
 - Task Scheduler 的 RestartOnFailure **只能重启由它自己启动的进程**。`Start-Process` 绕过 Task Scheduler 启动的进程挂了，RestartOnFailure 不会触发。安装后必须用 `Start-ScheduledTask` 启动
 - 安装脚本中停旧进程→注册任务→启动任务之间需要留够间隔（`Start-Sleep`），否则可能竞争导致首次启动立即崩溃
+- Task Scheduler 启动 `powershell.exe -WindowStyle Hidden` 仍会短暂闪窗（Windows 先创建可见窗口再隐藏）。解决：加一层 `launcher.vbs`，用 `WScript.Shell.Run cmd, 0` 启动，计划任务调用 `wscript.exe launcher.vbs`
+- **launcher.vbs 必须用 `bWaitOnReturn=True`**：`False` 会让 VBS 秒退，Task Scheduler 认为任务已完成（状态 Ready），RestartOnFailure 形同虚设。改 `True` 后 Scheduler 保持 Running 状态，进程被杀时能自动重启。Windows Modern Standby 电源管理会强杀后台进程（连 finally 都不跑），必须依赖 Scheduler 重启
